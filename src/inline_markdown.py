@@ -2,14 +2,26 @@ import re
 from textnode import TextType, TextNode
 
 
+
+def text_to_textnodes(text):
+    text = TextNode(text, TextType.TEXT)
+    new_nodes = [text]
+    new_nodes = split_nodes_delimiter(new_nodes, "**", TextType.BOLD)
+    new_nodes = split_nodes_delimiter(new_nodes, "_", TextType.ITALIC)
+    new_nodes = split_nodes_delimiter(new_nodes, "`", TextType.CODE)
+    new_nodes = split_nodes_image(new_nodes)
+    new_nodes = split_nodes_link(new_nodes)
+    return new_nodes
+
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    new_node_list = []
+    new_nodes = []
     for old_node in old_nodes:
         if not isinstance(old_node, TextNode):
-            new_node_list.append(old_node)
+            new_nodes.append(old_node)
             continue
         if delimiter not in old_node.text:
-            new_node_list.append(old_node)
+            new_nodes.append(old_node)
             continue
 
         parts = old_node.text.split(delimiter)
@@ -19,11 +31,11 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if part == "":
                 continue
             if i % 2 == 0:
-                new_node_list.append(TextNode(part, TextType.TEXT))
+                new_nodes.append(TextNode(part, TextType.TEXT))
             else:
-                new_node_list.append(TextNode(part, text_type))
+                new_nodes.append(TextNode(part, text_type))
 
-    return new_node_list
+    return new_nodes
 
 
 def extract_markdown_images(text):
@@ -33,10 +45,10 @@ def extract_markdown_links(text):
     return re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)", text)
 
 def split_nodes_image(old_nodes):
-    new_node_list = []
+    new_nodes = []
     for old_node in old_nodes:
         if not isinstance(old_node, TextNode):
-            new_node_list.append(old_node)
+            new_nodes.append(old_node)
             continue
 
         if old_node.text_type == TextType.TEXT:
@@ -47,24 +59,24 @@ def split_nodes_image(old_nodes):
                     markdown = f"![{alt}]({url})"
                     before, after = current_text.split(markdown, 1)
                     if before != "":
-                        new_node_list.append(TextNode(before, TextType.TEXT))
-                    new_node_list.append(TextNode(alt, TextType.IMAGE, url))
+                        new_nodes.append(TextNode(before, TextType.TEXT))
+                    new_nodes.append(TextNode(alt, TextType.IMAGE, url))
                     current_text = after
 
                 if current_text != "":
-                    new_node_list.append(TextNode(current_text, TextType.TEXT))
+                    new_nodes.append(TextNode(current_text, TextType.TEXT))
             else:
-                new_node_list.append(old_node)
+                new_nodes.append(old_node)
         else:
-            new_node_list.append(old_node)
+            new_nodes.append(old_node)
 
-    return new_node_list
+    return new_nodes
 
 def split_nodes_link(old_nodes):
-    new_node_list = []
+    new_nodes = []
     for old_node in old_nodes:
         if not isinstance(old_node, TextNode):
-            new_node_list.append(old_node)
+            new_nodes.append(old_node)
             continue
 
         if old_node.text_type == TextType.TEXT:
@@ -75,15 +87,19 @@ def split_nodes_link(old_nodes):
                     markdown = f"[{alt}]({url})"
                     before, after = current_text.split(markdown, 1)
                     if before != "":
-                        new_node_list.append(TextNode(before, TextType.TEXT))
-                    new_node_list.append(TextNode(alt, TextType.LINK, url))
+                        new_nodes.append(TextNode(before, TextType.TEXT))
+                    new_nodes.append(TextNode(alt, TextType.LINK, url))
                     current_text = after
 
                 if current_text != "":
-                    new_node_list.append(TextNode(current_text, TextType.TEXT))
+                    new_nodes.append(TextNode(current_text, TextType.TEXT))
             else:
-                new_node_list.append(old_node)
+                new_nodes.append(old_node)
         else:
-            new_node_list.append(old_node)
+            new_nodes.append(old_node)
 
-    return new_node_list
+    return new_nodes
+
+
+
+    
