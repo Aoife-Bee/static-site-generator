@@ -1,7 +1,13 @@
-from textnode import TextNode, TextType
+import os
+import shutil
+from copystatic import copy_static_to_public
+
+dir_path_static = "./static"
+dir_path_public = "./public"
+
 
 def main():
-    node = TextNode("This is some anchor text", TextType.LINK, url="https://www.boot.dev")
-    print(node)
+    copy_static_to_public(dir_path_static, dir_path_public)
+    
     
 main()
