@@ -12,7 +12,8 @@ def markdown_to_html_node(markdown):
     for block in blocks:
         block_type = block_to_block_type(block)
         child = block_to_html_node(block, block_type)
-        children.append(child)
+        if child is not None:
+            children.append(child)
 
     return ParentNode("div", children)
 
@@ -45,6 +46,8 @@ def quote_to_html_node(block):
     lines = block.split("\n")
     cleaned = []
     for line in lines:
+        if not line.startswith(">"):
+            raise ValueError("invalid quote block")
         cleaned.append(line[1:].lstrip())
     text = " ".join(cleaned)
     text_nodes = text_to_textnodes(text)
