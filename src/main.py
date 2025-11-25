@@ -1,19 +1,19 @@
 import os
 import shutil
 from copystatic import copy_static_to_public
-from gencontent import generate_page
+from gencontent import generate_pages_recursive
 
 dir_path_static = "./static"
 dir_path_public = "./public"
-from_path = "./content/index.md"
-template_path = "./template.html"
-dest_path = "./public/index.html"
+content_dir = "./content"
+template = "./template.html"
+public_dir = "./public"
 
 
 def main():
     copy_static_to_public(dir_path_static, dir_path_public)
-    generate_page(from_path, template_path, dest_path)
-
+    generate_pages_recursive(content_dir, template, public_dir)
+    print("All pages generated successfully!")
     
     
 main()
